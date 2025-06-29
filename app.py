@@ -6,12 +6,12 @@ Versiunea finală optimizată
 
 import streamlit as st
 
-# --- CONFIGURAREA OPTIMIZATĂ A PAGINII (TREBUIE SĂ FIE PRIMA COMANDĂ!) ---
+# CONFIGURAREA OPTIMIZATĂ A PAGINII 
 st.set_page_config(
     page_title="ArtAdvisor", 
     page_icon="🎨", 
     layout="wide",
-    initial_sidebar_state="collapsed",  # Maximizează spațiul de lucru
+    initial_sidebar_state="collapsed",  
     menu_items={
         'Get Help': None,
         'Report a bug': None,
@@ -29,7 +29,6 @@ torch_classes = types.ModuleType("torch.classes")
 torch_classes.__path__ = []
 sys.modules["torch.classes"] = torch_classes
 
-# Importă componentele UI (după st.set_page_config)
 from ui_components.analysis_tab import render_analysis_tab
 from ui_components.gallery_tab import render_gallery_tab
 from ui_components.search_tab import render_search_tab
@@ -40,18 +39,16 @@ from ui_components.emotional_journeys_tab import render_emotional_journeys_tab
 from ui_components.art_therapy_tab import render_art_therapy_tab
 
 # Cache optimizat pentru fișiere CSS
-@st.cache_data(ttl=3600)  # Cache 1 oră
+@st.cache_data(ttl=3600) 
 def load_css_optimized():
     """Încarcă toate stilurile CSS într-un singur fișier optimizat."""
     css_content = ""
     
-    # Încarcă stilurile  principale
     style_path = Path("static/style_ultra_premium.css")
     if style_path.exists():
         with open(style_path, 'r', encoding='utf-8') as f:
             css_content += f.read()
     
-    # Încarcă stilurile galerie 
     gallery_path = Path("static/gallery_ultra_premium.css")
     if gallery_path.exists():
         with open(gallery_path, 'r', encoding='utf-8') as f:
@@ -68,16 +65,14 @@ def get_base64_img(image_path):
     except:
         return ""
 
-# Aplică CSS-ul optimizat o singură dată per sesiune
+# CSS-ul optimizat o singură dată per sesiune
 css_styles = load_css_optimized()
 if css_styles:
     st.markdown(f"<style>{css_styles}</style>", unsafe_allow_html=True)
 
-# Inițializare state pentru navigare ultra-rapidă
 if 'current_tab' not in st.session_state:
     st.session_state.current_tab = "analysis"
 
-# Header modern
 st.markdown("""
 <div class="header">
     <h1 style="color: #D4AF37; text-align: center; margin: 0; font-family: 'Playfair Display', serif; font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
@@ -86,7 +81,6 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Navigare cu butoane optimizate
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
 
 # Container pentru butoane - layout optimizat pentru 8 tab-uri
@@ -150,10 +144,9 @@ with col8:
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Separator elegant
+# Separator
 st.markdown('<div class="separator"></div>', unsafe_allow_html=True)
 
-# Randează tab-ul selectat cu încărcare optimizată
 current_tab = st.session_state.current_tab
 
 try:
@@ -195,7 +188,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# CSS suplimentar pentru stiluri moderne extra
+# CSS suplimentar
 st.markdown("""
 <style>
 .header {
@@ -287,8 +280,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Optimizări suplimentare pentru performanță maximă
-@st.cache_data(ttl=1800, show_spinner=False)  # Cache 30 minute
+@st.cache_data(ttl=1800, show_spinner=False)  
 def optimize_uploaded_image(uploaded_file, max_size=(1024, 1024)):
     """
     Optimizează imaginea încărcată pentru procesare rapidă.
@@ -298,15 +290,12 @@ def optimize_uploaded_image(uploaded_file, max_size=(1024, 1024)):
         from PIL import Image
         import io
         
-        # Deschide imaginea din upload
         image = Image.open(uploaded_file).convert('RGB')
         
-        # Verifică dacă trebuie redimensionată
         if image.size[0] > max_size[0] or image.size[1] > max_size[1]:
             # Calculează noua dimensiune păstrând proporțiile
             image.thumbnail(max_size, Image.Resampling.LANCZOS)
         
-        # Salvează în buffer optimizat
         img_buffer = io.BytesIO()
         image.save(img_buffer, format='JPEG', quality=85, optimize=True)
         img_buffer.seek(0)
@@ -315,7 +304,7 @@ def optimize_uploaded_image(uploaded_file, max_size=(1024, 1024)):
     except Exception as e:
         return uploaded_file, None
 
-@st.cache_data(ttl=900, show_spinner=False)  # Cache 15 minute pentru metadata
+@st.cache_data(ttl=900, show_spinner=False)  
 def load_emotion_database():
     """Încarcă baza de date cu emoții cu cache optimizat."""
     import json
@@ -325,7 +314,7 @@ def load_emotion_database():
     except:
         return {}
 
-@st.cache_data(ttl=1200, show_spinner=False)  # Cache 20 minute
+@st.cache_data(ttl=1200, show_spinner=False)  
 def load_narrative_templates():
     """Încarcă template-urile pentru narațiuni cu cache."""
     return {

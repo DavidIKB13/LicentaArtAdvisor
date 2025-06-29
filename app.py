@@ -1,6 +1,6 @@
 """
 ArtAdvisor
-Aplicație pentru analiza opereror de artă
+Aplicație pentru analiza operelor de artă
 Versiunea finală optimizată
 """
 

@@ -1,13 +1,10 @@
-# predictors/emotion_predictor.py
-# VERSIUNEA FINALĂ, CORECTATĂ ȘI OPTIMIZATĂ
-
 import torch
 import torch.nn as nn
 from torchvision import models, transforms
 from PIL import Image
 import torchvision.models.vision_transformer as vit
 import streamlit as st
-import operator # MODIFICARE: Am adăugat importul pentru sortare
+import operator # Am adăugat importul pentru sortare
 
 # --- CONSTANTE ȘI CONFIGURARE ---
 MODEL_PATH = "models/model_licenta_definitiv.pth"
@@ -80,13 +77,13 @@ def predict_emotion(image_path: str):
 
         with torch.no_grad():
             outputs = model(image_tensor)
-            # Acest model este multi-label, deci folosim sigmoid
+            # Acest model este multi-label -- sigmoid
             probabilities = torch.sigmoid(outputs).cpu().squeeze()
         
-        # Folosim map-ul pentru a traduce emoțiile în română
+        # traduce emoțiile în română
         results = {EMOTIONS_MAP[EMOTIONS_KEYS[i]]: prob.item() for i, prob in enumerate(probabilities)}
         
-        # --- MODIFICARE: Sortăm și formatăm rezultatul pentru app.py ---
+        # Sortăm și formatăm rezultatul pentru app.py
         predictions_sorted = sorted(results.items(), key=operator.itemgetter(1), reverse=True)
         
         return {"predictions_sorted": predictions_sorted}

@@ -102,6 +102,98 @@ Pune opera în context istoric! Vorbește despre perioada în care a fost creat�
         st.error(f"Eroare OpenAI: {e}")
         return None
 
+def synthesize_audio_openai(text: str) -> BytesIO | None:
+    """Generează audio natural în română cu intonație expresivă și tonalitate plăcută."""
+    try:
+        client = get_openai_client()
+        
+      
+        response = client.audio.speech.create(
+            model="tts-1-hd",    
+            voice="nova",         
+            input=text,
+            speed=0.95             
+        )
+
+        audio_bytes = BytesIO(response.content)
+        return audio_bytes
+
+    except Exception as e:
+        show_streamlit_error(f"Nu s-a putut genera narațiunea audio expresivă: {e}")
+        return None
+
+def synthesize_audio_with_emotion(text: str, emotion_style: str = "warm") -> BytesIO | None:
+    """
+    Generează audio cu stil emoțional adaptat pentru o experiență și mai naturală.
+    
+    Args:
+        text: Textul de citit
+        emotion_style: "warm" (căldură), "dramatic" (dramatic), "contemplative" (contemplativ)
+    """
+    try:
+        client = get_openai_client()
+        
+        voice_map = {
+            "warm": "alloy",       
+            "dramatic": "shimmer", 
+            "contemplative": "fable" 
+        }
+        
+        selected_voice = voice_map.get(emotion_style, "alloy")
+        
+        speed_map = {
+            "warm": 0.95,
+            "dramatic": 0.9,
+            "contemplative": 0.85
+        }
+        speed = speed_map.get(emotion_style, 0.95)
+        
+        response = client.audio.speech.create(
+            model="tts-1-hd",
+            voice=selected_voice,
+            input=text,
+            speed=speed
+        )
+
+        return BytesIO(response.content)
+
+    except Exception as e:
+        show_streamlit_error(f"Nu s-a putut genera audio cu stil emoțional: {e}")
+        return None
+
+def chat_with_artist(artist_name: str, user_question: str, artwork_info: dict) -> str:
+    """Creează un dialog cu artistul pe baza personalității sale."""
+    try:
+        client = get_openai_client()
+        
+        if artist_name not in ARTIST_PERSONAS:
+            return "Ne pare rău, nu putem identifica artistul pentru a începe conversația."
+        
+        persona = ARTIST_PERSONAS[artist_name]
+        
+        full_prompt = f"""{persona['prompt']}
+        
+        Informații despre opera discutată:
+        - Stil: {artwork_info.get('stil', 'necunoscut')}
+        - Emoții detectate: {', '.join(artwork_info.get('emotii', []))}
+        
+        Întrebarea utilizatorului: {user_question}
+        
+        Răspunde ca {artist_name}, referindu-te la opera și la întrebarea utilizatorului."""
+        
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": full_prompt}],
+            temperature=0.8,
+            max_tokens=400
+        )
+        
+        return response.choices[0].message.content.strip()
+    
+    except Exception as e:
+        return f"Ne pare rău, a apărut o eroare în conversația cu artistul: {e}"
+
+
 def ask_gpt_about_painting(user_question: str, predictions: dict) -> str:
     """
     Trimite o întrebare despre pictură către GPT și returnează răspunsul.

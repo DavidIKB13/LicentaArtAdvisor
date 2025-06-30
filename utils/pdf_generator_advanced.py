@@ -11,7 +11,7 @@ def check_pdf_capabilities():
     capabilities = {
         'weasyprint': False,
         'pdfkit': False,
-        'reportlab': Falsed
+        'reportlab': False
     }
     
     if platform.system() != "Windows":

@@ -141,3 +141,38 @@ def get_artwork_details(json_file_path):
 def get_all_artworks(gallery_dir="gallery_uploads", sort_by_date=True):
     """Încarcă toate operele de artă din galerie. (Funcție backwards-compatible)"""
     return get_all_artworks_cached(gallery_dir, sort_by_date)
+
+def save_feedback_to_csv(feedback_data):
+    """
+    Salvează feedback-ul utilizatorului într-un fișier CSV.
+    Funcționalitate preluată din app.py original.
+    """
+    import csv
+    import os
+    from datetime import datetime
+    
+    try:
+        file_path = "feedback_logs.csv"
+        file_exists = os.path.exists(file_path)
+        
+        # Asigură-te că feedback_data are toate câmpurile necesare
+        if 'timestamp' not in feedback_data:
+            feedback_data['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        with open(file_path, mode='a', newline='', encoding='utf-8') as f:
+            fieldnames = [
+                'timestamp', 'filename', 'stil_prezis', 'autor_prezis', 'emotii_prezise',
+                'feedback', 'comentariu_utilizator', 'stil_corect_utilizator', 'autor_corect_utilizator'
+            ]
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            
+            if not file_exists:
+                writer.writeheader()
+            
+            writer.writerow(feedback_data)
+        
+        return True
+        
+    except Exception as e:
+        print(f"Eroare la salvarea feedback-ului: {e}")
+        return False
